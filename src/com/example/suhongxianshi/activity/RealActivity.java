@@ -3,6 +3,7 @@ package com.example.suhongxianshi.activity;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Random;
 
 import com.example.suhongxianshi.R;
 import com.example.suhongxianshi.model.JsonTestClass;
@@ -16,6 +17,7 @@ import com.example.suhongxianshi.util.Utility;
 import android.os.Bundle;
 import android.util.Log;
 import android.view.Window;
+import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.TextView;
 import android.widget.Toast;
@@ -25,10 +27,14 @@ import android.widget.Toast;
 
 public class RealActivity extends BaseActivity {
 	public static List<OrderMessage> orderList = new ArrayList<OrderMessage>();
+	public static int [] pic_switch_arr = {R.drawable.fruit1, R.drawable.fruit2, R.drawable.fruit3, R.drawable.fruit4, R.drawable.fruit5, R.drawable.fruit6, R.drawable.fruit7, R.drawable.fruit8};
 	public static List<String> ready_order_list = new ArrayList<String>();
 	public static final String TAG = "RealActivity";
 	private static int test_modify_content_flag=0;
 	private static Toast MTOAST;			//全局Toast
+	private static boolean switch_flag = true;
+	
+	private static Random random =new Random(100);		//掐换图片的随机数种子
 	
 	private LinearLayout data_page_layout;	//数据页面的最外层布局，决定是否需要显示
 	private LinearLayout wait_layout;
@@ -43,6 +49,10 @@ public class RealActivity extends BaseActivity {
 	private TextView ready_one_text;
 	private TextView ready_two_text;
 	private TextView ready_three_text;
+	
+	private ImageView no_data_select_image;
+	
+	
 	
 	/*刷新数据的线程*/
 	Runnable refreshDataThread=new Runnable(){
@@ -88,6 +98,8 @@ public class RealActivity extends BaseActivity {
 		ready_two_text = (TextView)findViewById(R.id.ready_two_text);
 		ready_three_text = (TextView)findViewById(R.id.ready_three_text);
 		
+		no_data_select_image = (ImageView)findViewById(R.id.no_data_select_image);
+		
 		Log.d(TAG, "onCreate");
 	}
 	
@@ -101,7 +113,7 @@ public class RealActivity extends BaseActivity {
 				runOnUiThread(new Runnable(){
 					public void run() {
 							Utility.handleOrderData(response, 1); //response
-							Toast.makeText(RealActivity.this, response, Toast.LENGTH_SHORT).show();
+							//Toast.makeText(RealActivity.this, response, Toast.LENGTH_SHORT).show();
 							if(RealActivity.orderList.size()!=0)	//处理显示内容
 							{
 								if(MTOAST !=null)
@@ -124,6 +136,10 @@ public class RealActivity extends BaseActivity {
 								data_page_layout.setVisibility(8);
 								network_disconnect.setVisibility(8);
 								wait_layout.setVisibility(0);
+								//Toast.makeText(RealActivity.this, ""+(random.nextInt()%pic_switch_arr.length), Toast.LENGTH_SHORT).show();
+								switch_flag=!switch_flag;
+								if(switch_flag)
+									no_data_select_image.setImageResource(RealActivity.pic_switch_arr[Math.abs((random.nextInt()%pic_switch_arr.length))]);
 								
 								MTOAST = Toast.makeText(RealActivity.this, "当前没有查询到数据，处于等待响应状态...", Toast.LENGTH_SHORT);
 								if(MTOAST != null)
@@ -157,7 +173,7 @@ public class RealActivity extends BaseActivity {
 				runOnUiThread(new Runnable(){
 					public void run() {
 							Utility.handleReadyOrderData(response, 1); //response
-							Toast.makeText(RealActivity.this, response, Toast.LENGTH_SHORT).show();
+							//Toast.makeText(RealActivity.this, response, Toast.LENGTH_SHORT).show();
 							if(RealActivity.ready_order_list.size()!=0)	//处理显示内容
 							{
 								if(RealActivity.ready_order_list.size()>=1)
