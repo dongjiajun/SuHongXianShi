@@ -1,0 +1,53 @@
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:orientation="vertical"
+    android:background="#345123"
+    >
+
+	
+    
+    <Button
+        android:id="@+id/test_button"
+        android:layout_width="match_parent"
+        android:layout_weight="1"
+        android:layout_height="0dp"
+        android:layout_marginTop="10dp"
+        android:text="测试网路连通性"
+        android:textSize="20sp"
+        />
+    
+    <Button
+        android:id="@+id/test_uithread"
+        android:layout_width="match_parent"
+        android:layout_marginTop="20dp"
+        android:layout_height="0dp"
+        android:layout_weight="1"
+        android:text="测试UI线程"
+        />
+    <Button
+        android:id="@+id/test_json_parse"
+        android:layout_height="0dp"
+        android:layout_weight="1"
+        android:layout_marginTop="20dp"
+        android:text="测试JSON解析"
+        android:layout_width="match_parent"
+        />
+    <Button
+        android:id="@+id/go_to_real"
+        android:layout_height="0dp"
+        android:layout_weight="1"
+        android:layout_marginTop="20dp"
+        android:text="跳转到显示"
+        android:layout_width="match_parent"
+        />
+    <TextView
+        android:id="@+id/text_ui_thread"
+        android:background="#ffffff"
+        android:layout_height="0dp"
+        android:layout_width="match_parent"
+        android:layout_weight="12"
+        />
+    
+
+</LinearLayout>
