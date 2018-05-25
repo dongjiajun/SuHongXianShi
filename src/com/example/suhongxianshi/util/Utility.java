@@ -77,7 +77,28 @@ public class Utility {
 		return false;
 	}
 	
-	
+	public synchronized static boolean handleReadyOrderData(String response, int type)
+	{
+		RealActivity.ready_order_list.clear();  //清湖单钱所有数据
+		if(!TextUtils.isEmpty(response))
+		{
+			try{
+				JSONArray jsonArray = new JSONArray(response);
+				Log.d(RealActivity.TAG, response);
+				for(int i = 0; i < jsonArray.length(); i++)
+				{
+					JSONObject jsonObject = jsonArray.getJSONObject(i);
+					RealActivity.ready_order_list.add(jsonObject.getString("shopping_name"));
+				}
+			}
+			catch(Exception e)
+			{
+				e.printStackTrace();
+			}
+		}
+		return false;
+		
+	}
 	
 	/*public synchronized static boolean handleServerResponseWarn(String response,int type)//注意之前的地方一条用不了for循环的原因是返回的json本来就不是数组的形式，只要使它返回数组格式的就好了。
 	{

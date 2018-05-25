@@ -5,6 +5,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 import com.example.suhongxianshi.R;
+import com.example.suhongxianshi.model.JsonTestClass;
 import com.example.suhongxianshi.model.OrderMessage;
 import com.example.suhongxianshi.util.AddrInterface;
 import com.example.suhongxianshi.util.BaseActivity;
@@ -24,8 +25,10 @@ import android.widget.Toast;
 
 public class RealActivity extends BaseActivity {
 	public static List<OrderMessage> orderList = new ArrayList<OrderMessage>();
+	public static List<String> ready_order_list = new ArrayList<String>();
 	public static final String TAG = "RealActivity";
 	private static int test_modify_content_flag=0;
+	private static Toast MTOAST;			//全局Toast
 	
 	private LinearLayout data_page_layout;	//数据页面的最外层布局，决定是否需要显示
 	private LinearLayout wait_layout;
@@ -50,6 +53,7 @@ public class RealActivity extends BaseActivity {
 				{
 					Thread.sleep(3000);
 					getNewerData();
+					getNewReadyData();
 				} 
 				catch (InterruptedException e) {
 					e.printStackTrace();
@@ -85,25 +89,23 @@ public class RealActivity extends BaseActivity {
 		ready_three_text = (TextView)findViewById(R.id.ready_three_text);
 		
 		Log.d(TAG, "onCreate");
-		//Toast.makeText(RealActivity.this, orderList.get(1).toString(), Toast.LENGTH_SHORT).show();
 	}
 	
 	
 	private void getNewerData()
 	{
-		String addr = AddrInterface.CONNECT_REAL_SERVER;
+		String addr = AddrInterface.CONNECT_REAL_SERVER_ORDER;
 		HttpUtil.sendHttpRequest(addr, new HttpCallbackListener(){
 			
 			public void onFinish(final String response) {//成功
 				runOnUiThread(new Runnable(){
 					public void run() {
-							
-							
 							Utility.handleOrderData(response, 1); //response
-							//Toast.makeText(RealActivity.this, "this orderList length is:"+RealActivity.orderList.size(), Toast.LENGTH_SHORT).show();
+							Toast.makeText(RealActivity.this, response, Toast.LENGTH_SHORT).show();
 							if(RealActivity.orderList.size()!=0)	//处理显示内容
 							{
-								//Toast.makeText(RealActivity.this, "response content is:"+response, Toast.LENGTH_SHORT).show(); //response
+								if(MTOAST !=null)
+									MTOAST.cancel();
 								data_page_layout.setVisibility(0);
 								wait_layout.setVisibility(8);
 								network_disconnect.setVisibility(8);
@@ -111,39 +113,21 @@ public class RealActivity extends BaseActivity {
 								standard_text.setText(RealActivity.orderList.get(0).getStandard());
 								task_num_text.setText(RealActivity.orderList.get(0).getTaskNum());
 								complete_text.setText(RealActivity.orderList.get(0).getCompleteNum());
-								
-								if(RealActivity.orderList.size()>=2)
-								{
-									//Toast.makeText(RealActivity.this, ""+RealActivity.orderList.size(),Toast.LENGTH_SHORT).show();
-									ready_one_text.setText(RealActivity.orderList.get(1).getName());
-								}
-								else
-									ready_one_text.setText("1:暂时没有待投任务");
-								if(RealActivity.orderList.size()>=3)
-									ready_two_text.setText(RealActivity.orderList.get(2).getName());
-								else
-									ready_two_text.setText("2:暂时没有待投任务");
-								if(RealActivity.orderList.size()>=4)
-									ready_two_text.setText(RealActivity.orderList.get(2).getName());
-								else
-									ready_three_text.setText("3:暂时没有待投任务");
 							}
 							else
 							{
 								/*容错逻辑*/
-								//Toast.makeText(RealActivity.this, "请求成功，获取信息错误！", Toast.LENGTH_SHORT).show();
 								name_text.setText("");
 								standard_text.setText("");
 								task_num_text.setText("");
 								complete_text.setText("");
-								ready_one_text.setText("");
-								ready_two_text.setText("");
-								ready_three_text.setText("");
 								data_page_layout.setVisibility(8);
 								network_disconnect.setVisibility(8);
 								wait_layout.setVisibility(0);
 								
-								Toast.makeText(RealActivity.this, "当前没有查询到数据，处于等待响应状态...", Toast.LENGTH_SHORT).show();
+								MTOAST = Toast.makeText(RealActivity.this, "当前没有查询到数据，处于等待响应状态...", Toast.LENGTH_SHORT);
+								if(MTOAST != null)
+									MTOAST.show();
 							}
 					}
 				});
@@ -155,12 +139,60 @@ public class RealActivity extends BaseActivity {
 						data_page_layout.setVisibility(8);
 						network_disconnect.setVisibility(0);
 						wait_layout.setVisibility(8);
-						Toast.makeText(RealActivity.this, "请求数据超时，请检查网络连接状态..", Toast.LENGTH_LONG).show();
+						MTOAST = Toast.makeText(RealActivity.this, "请求数据超时，请检查网络连接状态..", Toast.LENGTH_SHORT);
+						if(MTOAST != null)
+							MTOAST.show();
 					}
 				});
 			}
 		});
 		
+	}
+	private void getNewReadyData()
+	{
+		String addr = AddrInterface.CONNECT_REAL_SERVER_READY;  //CONNCT_LOCAL_SERVER_READY
+		HttpUtil.sendHttpRequest(addr, new HttpCallbackListener(){
+			
+			public void onFinish(final String response) {//成功
+				runOnUiThread(new Runnable(){
+					public void run() {
+							Utility.handleReadyOrderData(response, 1); //response
+							Toast.makeText(RealActivity.this, response, Toast.LENGTH_SHORT).show();
+							if(RealActivity.ready_order_list.size()!=0)	//处理显示内容
+							{
+								if(RealActivity.ready_order_list.size()>=1)
+									ready_one_text.setText("1:"+RealActivity.ready_order_list.get(0).toString());
+								else
+									ready_one_text.setText("1:暂时没有待投任务");
+								if(RealActivity.ready_order_list.size()>=2)
+									ready_two_text.setText("2:"+RealActivity.ready_order_list.get(1).toString());
+								else
+									ready_two_text.setText("2:暂时没有待投任务");
+								if(RealActivity.ready_order_list.size()>=3)
+									ready_three_text.setText("3:"+RealActivity.ready_order_list.get(2).toString());
+								else
+									ready_three_text.setText("3:暂时没有待投任务");
+							}
+							else
+							{
+								/*容错逻辑*/
+								ready_one_text.setText("1:暂时没有待投任务");
+								ready_two_text.setText("2:暂时没有待投任务");
+								ready_three_text.setText("3:暂时没有待投任务");
+								
+							}
+					}
+				});
+			}
+			
+			public void onError(Exception e) {//错误 
+				runOnUiThread(new Runnable(){
+					public void run() {
+						/*暂时放空代码即可，不需要逻辑*/
+					}
+				});
+			}
+		});
 	}
 	protected void onStart()
     {

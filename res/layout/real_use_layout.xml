@@ -288,7 +288,8 @@
 	                android:layout_height="match_parent"
 	                android:textSize="40sp"
 	                android:text=""
-	                android:gravity="center"
+	                android:gravity="left"
+	                android:layout_marginLeft="5dp"
 	                />
 	            <!-- <ImageView
 	                android:layout_width="10dp"
@@ -331,7 +332,8 @@
 	                android:layout_height="match_parent"
 	                android:textSize="40sp"
 	                android:text=""
-	                android:gravity="center"
+	                android:gravity="left"
+	                android:layout_marginLeft="5dp"
 	                />
 	            <!-- <ImageView
 	                android:layout_width="10dp"
@@ -374,7 +376,8 @@
 	                android:layout_height="match_parent"
 	                android:textSize="40sp"
 	                android:text=""
-	                android:gravity="center"
+	                android:gravity="left"
+	                android:layout_marginLeft="5dp"
 	                />
 	            <!-- <ImageView
 	                android:layout_width="10dp"
